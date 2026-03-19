@@ -13,7 +13,11 @@ def main():
     # dictory()                      # 九、字典
     # set()                          # 十、集合
     # data_type_summary()            # 十一、数据类型总结
-    flow_control()                 # 十二、流程控制
+    # flow_control()                 # 十二、流程控制
+    # function()                     # 十三、函数
+    # functional_stu_manage()        # 十四、函数版学员管理系统
+    # exception()                    # 十五、异常处理
+    custom_exception()             # 十六、自定义异常
     #********************控制台********************
 
 # --------------------------------------------------------------------------------
@@ -392,7 +396,7 @@ def flow_control():
     print("十二、流程控制========================================")
     # 1.顺序结构：略
     # 2.分支结构：
-    #   🞉 if + else if/else
+    #   🞉 if + elif/else
     #   🞉 match-case    (Python3.10+新增)
     #     用法类似switch，但功能更强(支持模式匹配)且不用写break
     # 3.循环结构：
@@ -414,6 +418,226 @@ def flow_control():
     print("× 本章无控制台输出案例")
 
     print()
+# --------------------------------------------------------------------------------
+# 十三、函数
+def function():
+    print("十三、函数========================================")
+    # 1.格式：def 函数名(参数列表):
+    #             函数体
+
+    # 2.函数参数
+    #   🞉 形参和实参：形参是函数定义时的占位符，实参是函数调用时传的具体值
+    #   🞉 常用参数类型：
+    #     · 位置参数(必备参数)：形参和实参必须一一对应
+    #     · 默认参数(缺省参数)：形参指定默认值，调用时可省略该参数(会自动用默认值)
+    #                     注意：默认参数必须放在后面
+    #     · 可变参数(*参数名)：接收任意数量的位置参数，自动打包成元组
+    #     · 关键字可变参数(**参数名)：接收任意数量的"键=值"形式的参数，自动打包成字典
+
+    # 3.返回值：无返回值的隐式返回None
+    # ※返回多个值(实际返回元组)：return 返回值1,返回值2...
+    #   · 接收方式1：用一个变量接收(得到元组)
+    #   · 接收方式2：解包(推荐)，用多个变量接收
+
+    # 4.变量的作用域：
+    #   🞉 局部变量：函数内部定义的变量(包括形参)。只在函数内部生效，函数执行完后就失效，外部无法访问
+    #   🞉 全局变量：函数外部定义的变量。整个程序都能访问(函数内部也能访问，除非被局部变量临时覆盖)
+    #             ※在函数内部可以通过 global 关键字创建/修改全局变量(注意必须先声明再赋值)
+
+    # 2 例：
+    # add(,2) 报错，不能通过 , 跳过参数(Python不允许在参数列表中留空)
+    add(1,2)
+    sum(1,2,3,4,5)
+    print("--------------------")
+    create_user("张三")
+    create_user("李四",age=18,sex="男")
+    print("--------------------")
+
+    # 3 例：
+    a = calc(1,2)
+    print(a)
+    b,c = calc(1,2)
+    print(b,c)
+
+    print()
+# ----------------------------------------
+def add(a=1,b=1):
+    print(f"{a}+{b}的结果为：{a+b}")
+# ----------------------------------------
+def sum(*numbers):
+    result = 0
+    for i in numbers:
+        result += i
+    print(f"总和为：{result}")
+# ----------------------------------------
+def create_user(username,**info):
+    print(f"用户名：{username}")
+    print("信息(可选)：")
+    for i in info.items():
+        print(i)
+# ----------------------------------------
+def calc(a,b):
+    return a+b,a*b
+# --------------------------------------------------------------------------------
+# 十四、函数版学员管理系统
+def functional_stu_manage():
+    print("十四、函数版学员管理系统========================================")
+    global info
+    info = []
+
+    while True:
+        print(f"{'='*25}\n{'学员管理系统 v1.0':^20}")
+        print("1.添加学员\n2.删除学员\n3.修改学员\n4.查询学员\n5.显示所有学员\n6.退出系统")
+        print("=" * 25)
+        choice = input("选择操作：")
+        if choice == "1":
+            add_stu()
+        elif choice == "2":
+            del_stu()
+        elif choice == "3":
+            modify_stu()
+        elif choice == "4":
+            search_stu()
+        elif choice == "5":
+            show_stu()
+        elif choice == "6":
+            print("系统已退出")
+            print()
+            return
+        else:
+            print("输入错误，请重新输入")
+# ----------------------------------------
+def add_stu():
+    while True:
+        existing_ids = {i["学号"] for i in info}
+        new_id = input("请输入学号：")
+        if new_id == "":
+            print("学号不能为空")
+        elif new_id in existing_ids:
+            print("学号已存在")
+        else:
+            break
+    new_name = input("请输入姓名：")
+    new_tel = input("请输入手机号：")
+    new_info = {"学号":new_id,"姓名":new_name,"手机号":new_tel}
+
+    info.append(new_info)
+    print(f"添加成功，添加的学员信息为：{new_info}")
+# ----------------------------------------
+def del_stu():
+    if len(info) == 0:
+        print("当前没有学员！")
+        return
+    while True:
+        del_id = input("请输入要删除的学号：")
+        for student in info:
+            if student["学号"] == del_id:
+                info.remove(student)
+                print(f"删除成功，删除的学员信息为：{student}")
+                return
+        print(f"学号{del_id}不存在！")
+# ----------------------------------------
+def modify_stu():
+    if len(info) == 0:
+        print("当前没有学员！")
+        return
+    while True:
+        modify_id = input("请输入要修改的学号：")
+        for student in info:
+            if student["学号"] == modify_id:
+                student["姓名"] = input("请输入新姓名：")
+                student["手机号"] = input("请输入新手机号：")
+                print(f"修改成功，修改后的学员信息为：{student}")
+                return
+        print(f"学号{modify_id}不存在！")
+# ----------------------------------------
+def search_stu():
+    if len(info) == 0:
+        print("当前没有学员！")
+        return
+    while True:
+        search_id = input("请输入要查询的学号：")
+        for student in info:
+            if student["学号"] == search_id:
+                print(student)
+                return
+        print(f"学号{search_id}不存在！")
+# ----------------------------------------
+def show_stu():
+    if len(info) == 0:
+        print("当前没有学员！")
+        return
+    print("当前学员信息：")
+    for i in info:
+        print(i)
+# --------------------------------------------------------------------------------
+# 十五、异常处理
+def exception():
+    print("十五、异常处理========================================")
+    # 1.定义：运行时出现的错误，会导致程序停止运行并报错
+    # 2.新手常见异常：
+    #    异常类型              通俗原因
+    #   NameError            用了没定义的变量
+    #   SyntaxError          代码语法不符合Python规则
+    #   IndexError           索引/下标越界
+    #   ZeroDivisionError    除数为0
+    #   KeyError             字典里没有这个键
+    #   IOError              文件操作失败(例如文件不存在)
+    #   AttributeError       对象没有这个属性
+    #   ValueError           传入的值不对(类型对但内容无效)
+    #   TypeError            类型不匹配
+    #   ImportError          导入模块失败(路径错或名字错)
+    #   IndentationError     缩进错误
+
+    # 3.异常处理(try-except)格式：
+    #       try:
+    #           可能触发异常的代码块
+    #       except 异常类型 as 变量名:    # "as 变量名" 可以捕获异常的描述(方便调试)
+    #           异常发生时执行的代码块
+    #       else:
+    #           无异常时执行的代码块(分离正常逻辑和异常逻辑)
+    #       finally:
+    #           无论是否有异常都会执行的代码块(通常用于释放资源)
+    #    其中except块可以有多个(以对每种异常专门编写处理方案)
+
+    # 例：
+    try:
+        print(int("1/0"))
+    # except (ZeroDivisionError,ValueError):    # 指定特定的异常类型
+    except Exception as e:
+        print("异常类型：",type(e).__name__)
+        print("异常信息：",e)
+        print("详细追踪：",e.__traceback__)
+    else:
+        print("无异常")
+    finally:
+        print("无论是否有异常，都会执行的代码块")
+
+    print()
+# --------------------------------------------------------------------------------
+# 十六、自定义异常
+def custom_exception():
+    print("十六、自定义异常========================================")
+    # 格式(入门，用Python自带的Exception类实现简单自定义异常，之后可以用class自定义异常类，此处暂且不谈)
+    #   🞉 定义：异常名 = Exception(异常描述)
+    #   🞉 使用：raise 异常名
+    #  也可以直接 raise Exception("异常描述")    # 适合只用一次的异常描述
+
+    # 例：
+    account_balance = 1000
+    account_is_frozen = False
+    amount = 500
+    withdraw(amount,account_balance,account_is_frozen)
+
+    print()
+# ----------------------------------------
+def withdraw(amount,account_balance,account_is_frozen):
+    if account_is_frozen:
+        raise Exception("账户已冻结")
+    if amount > account_balance:
+        raise Exception("余额不足")
+    account_balance -= amount
+    print("取款成功，取款金额：",amount)
 # --------------------------------------------------------------------------------
 if __name__ == "__main__":
     main()
