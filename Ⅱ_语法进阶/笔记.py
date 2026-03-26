@@ -11,7 +11,8 @@ def main():
     # file_operation()               # 三、文件操作
     # directory_operation()          # 四、目录常用操作
     # regular_expression()           # 五、正则表达式
-    closure_decorator()            # 六、闭包、装饰器
+    # closure()                      # 六、闭包
+    decorator()                    # 七、装饰器
     #********************控制台********************
 
 # --------------------------------------------------------------------------------
@@ -427,9 +428,9 @@ def regular_expression():
 
     print()
 # --------------------------------------------------------------------------------
-# 六、闭包、装饰器
-def closure_decorator():
-    print("六、闭包、装饰器========================================")
+# 六、闭包
+def closure():
+    print("六、闭包========================================")
     # 1.概念：一个函数能够"记住"并访问它定义时所处的作用域(即外部函数的变量)，
     #        即使这个外部函数已经执行完毕
     # 2.闭包的3个构成条件【重点】
@@ -492,6 +493,104 @@ def closure_decorator():
     print("--------------------")
     # 由此可见，基础的闭包只能按固定顺序传参。如果想修改中间参数，必须重建整个闭包链，很不灵活
     # 之后可以使用类/字典参数/列表累计/partial函数等针对这种情况进行改进，此处暂且不谈
+
+    print()
+# --------------------------------------------------------------------------------
+# 七、装饰器
+def decorator():
+    print("========================================")
+    # 1.概念：一种用于在不修改原函数代码的情况下，给函数添加额外功能的设计模式
+    #         其本质上是一个"接收函数作为参数，返回新函数的闭包"
+    #         ——输入是原函数，输出是"原函数 + 新功能"的组合函数
+    # 2.格式：类似闭包，但参数变成了函数名
+    #   技巧：使用 @装饰器名 注解(支持多个装饰器叠加，但分别使用还是需要手动调用)
+    #   注意：如果原函数需要接收参数，装饰器的内层函数要支持参数传递，
+    #         建议用 *args 和 **kwargs (接收任意数量、任意类型的参数，比用位置参数更泛用)
+    # 3.部分常见用途：
+    #   🞉 登录验证：需要登录才能执行的函数(如评论、下单、转账)
+    #   🞉 日志记录：记录函数的执行时间、参数、返回结果(方便调试)
+    #   🞉 性能监测：统计函数的执行耗时
+    #   🞉 权限控制：判断用户是否有执行函数的权限(如管理员才能删除数据)
+
+    # 2 例1：简单装饰器
+    def decorator1(func1):
+        def wrapper1():
+            # 新增功能：登录验证
+            print("登录验证......")
+            func1()
+        return wrapper1 #返回包装后的函数
+    def send_msg1():
+        print("发送消息！")
+    @decorator1 # 添加这个注释，相当于把 send_msg() 函数的参数 func1 赋值为 send_msg
+    def send_money1():
+        print("转账！")
+
+    # 调用装饰器，得到新函数
+    combined_function1 = decorator1(send_msg1)
+    # 调用新函数
+    combined_function1()
+    send_money1() # 无需手动调用装饰器
+    print("--------------------")
+    #----------------------------------------
+    # 2 例2：升级版装饰器(接收参数)
+    def decorator2(func2):
+        def wrapper2(*args, **kwargs):
+            print("登录验证......")
+            func2(*args, **kwargs)
+        return wrapper2
+    @decorator2
+    def send_msg2(name):
+        print(f"发送消息给{name}！")
+    @decorator2
+    def send_money2(name,money):
+        print(f"转账{money}元给{name}！")
+
+    send_msg2("张三")
+    send_money2("李四",100)
+    print("--------------------")
+    #----------------------------------------
+    # 2 例3：多层升级版装饰器
+    def decorator3(func3):
+        def wrapper3_outer(*args, **kwargs):
+            print("登录验证......")
+            def wrapper3_inner(*args, **kwargs):
+                print("登录成功！！！")
+                func3(*args, **kwargs)
+            return wrapper3_inner(*args, **kwargs)
+        return wrapper3_outer
+    @decorator3
+    def send_msg3(name):
+        print(f"发送消息给{name}！")
+    @decorator3
+    def send_money3(name,money):
+        print(f"转账{money}元给{name}！")
+
+    send_msg3("张三")
+    send_money3("李四",100)
+    print("--------------------")
+
+    # ----------------------------------------
+    # 2 例4：装饰器叠加(离函数越近的装饰器越先执行)
+    def decorator4_1(func4):
+        def wrapper4_1(*args, **kwargs):
+            return "前缀 " + func4(*args, **kwargs) + " 111 "
+        return wrapper4_1
+    def decorator4_2(func4):
+        def wrapper4_2(*args, **kwargs):
+            return " 222 " + func4(*args, **kwargs) + " 后缀"
+        return wrapper4_2
+
+    @decorator4_1
+    @decorator4_2
+    def say_hello1(name):
+        return f"hello，{name}"
+    @decorator4_2
+    @decorator4_1
+    def say_hello2(name):
+        return f"hello，{name}"
+
+    print(say_hello1("张三"))
+    print(say_hello2("李四"))
 
     print()
 # --------------------------------------------------------------------------------
