@@ -12,7 +12,8 @@ def main():
     # directory_operation()          # 四、目录常用操作
     # regular_expression()           # 五、正则表达式
     # closure()                      # 六、闭包
-    decorator()                    # 七、装饰器
+    # decorator()                    # 七、装饰器
+    singleton_and_magic_methods()  # 八、单例模式和魔术方法
     #********************控制台********************
 
 # --------------------------------------------------------------------------------
@@ -591,6 +592,176 @@ def decorator():
 
     print(say_hello1("张三"))
     print(say_hello2("李四"))
+
+    print()
+# --------------------------------------------------------------------------------
+# 八、单例模式和魔术方法
+def singleton_and_magic_methods():
+    print("八、单例模式和魔术方法========================================")
+    # 1.实例化的完整流程：
+    #   1.1.调用 类名() 时，Python先执行__new__方法，分配内存空间，返回对象引用
+    #   1.2.Python把对象引|用作为self参数，传给__init__方法
+    #   1.3.__init__方法给对象设置属性，完成初始化
+    #  注意：__new__方法不返回对象引用的话，__init__方法将无法被调用
+    #   🞉 __new__ vs __init__
+    #        对比维度       __new__方法           __init__方法
+    #       核心作用      创建对象，分配内存    初始化对象，设置属性
+    #       第一个参数    cls(代表当前类)       self(代表当前对象)
+    #       返回值        必须返回对象引用      无返回值(默认None)
+    #       执行时机      实例化时先执行        __new__之后执行
+
+    # 2.单例模式：
+    #   🞉 概念：保证一个类只有一个实例，并提供一个访问它的全局访问点
+    #   🞉 优点：
+    #     · 节省内存：避免创建多个重复对象，减少资源浪费(比如数据库连接，创建一次供全程序使用)
+    #     · 统一管理：全程序使用同一个对象，数据一致，避免冲突(比如配置管理器、游戏的场景管理器)
+    #   🞉 格式：
+    #   ※2.1.重写__new__方法(最常用)：
+    #           定义一个类属性(比如 _instance)，初始值为 None，用来记录唯一的实例
+    #           重写__new__方法：
+    #               如果类属性是 None，则调用父类__new__创建实例，并存入类属性
+    #               如果类属性不是 None，则直接返回类属性中记录的实例
+    #         这样不管实例化多少次，都只会返回同一个对象
+    #     注：hasattr(要检查的对象, 属性/方法名【字符串格式！】)：判断对象是否包含指定属性/方法
+    #     2.2.使用模块(Python的模块是天然的单例模式)：
+    #           创建一个模块，在里面定义类并实例化。使用时导入模块及其创建的实例即可
+    #   注：其他实现方式此处暂且不谈
+    #   🞉 应用场景：
+    #     · 系统工具类：如回收站、打印机、音乐播放器(同一时间只能播放一首歌曲)
+    #     · 资源密集型对象：如数据库连接池、网络连接(创建成本高，复用更高效)
+    #     · 全局管理器：如游戏场景管理器、配置管理器(需要统一管理数据/状态)
+
+    # 3.魔术方法/魔术属性
+    #   🞉 概念：以__xx__命名的方法/属性，其能让对象拥有额外能力(比如打印对象时显示详细信息)
+    #   🞉 常用魔术属性：
+    #        魔术属性
+    #       __doc__       查看类的描述信息(类中 三引号 定义的内容)
+    #       __module__    查看对象所属的模块
+    #       __class__     查看对象所属的类
+    #       __dict__      查看对象的属性和值(返回字典)
+    #   🞉 常用魔术方法：
+    #     · __str__()：自定义对象的打印信息
+    #           当对象被打印时触发，返回的字符串将作为打印结果
+    #     · __del__()：对象被删除时触发
+    #           当对象被删除(手动del或程序结束)时触发，可用于释放资源(如关闭文件)
+    #     · __call__()：让对象能像函数一样调用
+    #           默认情况下，对象不能像函数那样加调用，__call__能实现这个功能
+    #         注：callable(对象)：判断对象是否可调用
+
+
+    # 1 例1：标准的实例化过程
+    class Example1:
+        def __new__(cls, *args, **kwargs):
+            print("__new__创建对象......")
+            # 也可以用 return object.__new__(cls)
+            return super().__new__(cls)
+        def __init__(self, parameter1, parameter2):
+            print("__init__初始化对象......")
+            self.property1 = parameter1
+            self.property2 = parameter2
+
+    object1 = Example1("parameter1","parameter2")
+    print(object1.property1)
+    print(object1.property2)
+    print("--------------------")
+    # ----------------------------------------
+    # 1 例2：__new__方法不返回对象引用
+    class Example2:
+        def __new__(cls, *args, **kwargs):
+            print("__new__创建对象......")
+        def __init__(self, parameter1, parameter2):
+            print("__init__初始化对象......")
+            self.property1 = parameter1
+            self.property2 = parameter2
+
+    object2 = Example2("parameter1","parameter2")
+    # print(object2.property1)    # 运行报错
+    # print(object2.property2)    # 运行报错
+    print("--------------------")
+
+    # 2.1 例1：有风险的单例模式(重复初始化，会覆盖对象属性！)
+    class Singleton1:
+        # 类属性，用于记录唯一对象
+        _instance = None
+        # 重写__new__方法
+        def __new__(cls, *args, **kwargs):
+            if cls._instance is None:
+                cls._instance = object.__new__(cls)
+                print("创建对象......")
+                return cls._instance
+            else:
+                print("对象已创建！返回对象......")
+                return cls._instance
+        def __init__(self, parameter):
+            print("初始化对象......")
+            self.property = parameter
+
+    obj1 = Singleton1("参数A")
+    print(obj1.property)
+    obj2 = Singleton1("参数B")
+    print(obj2.property) # 对象属性被覆盖了！
+    print("--------------------")
+    # ----------------------------------------
+    # 2.1 例2：改进的单例模式
+    class Singleton2:
+        # 类属性，用于记录唯一对象
+        _instance = None
+
+        # 重写__new__方法
+        def __new__(cls, *args, **kwargs):
+            if cls._instance is None:
+                cls._instance = object.__new__(cls)
+                print("对象未创建！创建对象......")
+                return cls._instance
+            else:
+                print("对象已创建！返回对象......")
+                return cls._instance
+        def __init__(self, parameter):
+            # 添加判断，防止重复初始化
+            # hasattr(要检查的对象, 属性/方法名【字符串格式！】)：判断对象是否包含指定属性/方法
+            if not hasattr(self, "property"):
+                print("对象属性未初始化！")
+                print("初始化对象......")
+                self.property = parameter
+            else:
+                print("对象属性已初始化！")
+
+    obj1 = Singleton2("参数A")
+    print(obj1.property)
+    obj2 = Singleton2("参数B")
+    print(obj2.property)
+    print("--------------------")
+
+    # 2.2 例：模块单例模式
+    from single_module import unique_obj as obj1
+    from single_module import unique_obj as obj2
+    print(id(obj1) == id(obj2))
+    obj1.show()
+    print("--------------------")
+
+    # 3 例：
+    class Student:
+        """学生类：存储学生姓名和年龄信息"""
+        def __init__(self, name, age):
+            self.name = name
+            self.age = age
+        def __str__(self):
+            return f"{self.name}对象的__str__已触发！学生：{self.name}，年龄：{self.age}岁"
+        def __del__(self):
+            print(f"{self.name}对象的__del__已触发！")
+        def __call__(self, a, b):
+            print(f"{self.name}对象的__call__已触发！{a} + {b} = {a+b}")
+
+    s1 = Student("张三", 18)
+    s2 = Student("李四", 18)
+    print(s1.__doc__)
+    print(s1.__module__)
+    print(s1.__class__)
+    print(s1.__dict__)
+    print(s2)
+    print(f"{s2.name}是否可调用：{callable(s2)}")
+    s2(1,2)
+    del s2
 
     print()
 # --------------------------------------------------------------------------------
