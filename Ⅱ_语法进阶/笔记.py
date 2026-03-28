@@ -13,7 +13,8 @@ def main():
     # regular_expression()           # 五、正则表达式
     # closure()                      # 六、闭包
     # decorator()                    # 七、装饰器
-    singleton_and_magic_methods()  # 八、单例模式和魔术方法
+    # singleton_and_magic_methods()  # 八、单例模式和魔术方法
+    iterator_and_generator()       # 九、迭代器和生成器
     #********************控制台********************
 
 # --------------------------------------------------------------------------------
@@ -762,6 +763,118 @@ def singleton_and_magic_methods():
     print(f"{s2.name}是否可调用：{callable(s2)}")
     s2(1,2)
     del s2
+
+    print()
+# --------------------------------------------------------------------------------
+# 九、迭代器和生成器
+def iterator_and_generator():
+    print("九、迭代器和生成器========================================")
+    # 1.可迭代对象(能被for循环遍历的对象)：
+    #   🞉 常见的可迭代对象：
+    #     · 内置数据类型：字特串(str)、列表(list)、元组(tuple)、字典(dict)、
+    #                    集合(set)、range 序列
+    #     · 其他：文件对象、迭代器、生成器
+    #   🞉 判断方法：用 isinstance() 结合 collections.abc.Iterable 类，就能快速判断
+    #           from collections.abc import Iterable
+    #           print(isinstance(判断对象,Iterable))
+    #   🞉 可迭代对象的核心条件：
+    #     · 实现了__iter__方法(这是魔法方法，不用手动写，内置可迭代对象都自带)
+    #     · __iter__方法会返回一个迭代器对象
+
+    # 2.迭代器(记录遍历位置的"指针")：
+    #   🞉 迭代器的2个核心方法：
+    #         方法                作用                     底层调用
+    #       iter(可迭代对象)    获取可迭代对象的迭代器    调用对象的__iter__方法
+    #       next(迭代器)        获取迭代器的下一个元素    调用迭代器的__next__方法
+    #   🞉 for循环的工作原理(底层是自动做了3件事)：
+    #     · 调用 iter(可迭代对象) 获取可迭代对象的迭代器
+    #     · 不断调用 next(迭代器) 获取迭代器的下一个元素，并赋值给循环变量(如 i)
+    #     · 遍历完所有元素后，自动捕获 next() 抛出的 StopIteration 异常，结束循环
+    #   🞉 可迭代对象 vs 迭代器(核心区别)：
+    #         对比维度      可迭代对象(如列表、字符串)    迭代器(如iter(列表)返回的对象)
+    #       遍历方式      只能用for循环遍历             可用next()逐个获取，也可用for循环
+    #       核心方法      有__iter__方法(返回迭代器)    有__iter__方法(自身) 和__next__方法
+    #       内存占用      一次性加载所有数据到内存       按需生成数据，不占额外内存
+    #       可重复使用    可以重复遍历(每次for循环都     一次性的，遍历完后不能再用(需重新创建)
+    #                     重新获取迭代器)
+    #     注：如果内置迭代器满足不了需求，也可以自己写迭代器类，
+    #         其核心是实现__iter__和__next__方法(详见"2 例")。
+    #         自定义迭代器实际使用并不多，且接下来学的 生成器 可以更快捷地实现相同功能
+
+    # 3.生成器(特殊迭代器、内存优化神器)
+    #   🞉 概念：
+    #      实现迭代器功能的特殊函数/表达式，本质是迭代器，但十分便捷且极其节省内存(用时生成，用完释放)
+    #   🞉 用因：
+    #     · 列表的痛点：例如处理100万条数据时，[i for i in range(1000000)]
+    #                   会一次性加载所有数据到内存，导致内存爆满
+    #     · 生成器的优势：(i for i in range(1000000))不会加载任何数据到内存，
+    #                   只有调用时才生成下一个元素，内存占用几乎可以忽略
+    #   🞉 格式：
+    #   ※· 生成器表达式(最简单)
+    #           把列表推导式的 [] 改成 () 就是生成器表达式
+    #           列表推导式：[表达式 for 变量 in 可迭代对象 if 条件]
+    #     · 生成器函数(带yield关键字)
+    #           在函数体中加入yield关键字，使其变成生成器函数：
+    #               其调用时不会执行函数体，而是返回一个生成器对象，
+    #               只有用next()或for循环触发，才会执行函数体。遇到yield就返回值并暂停
+    #           yield的核心作用：返回值 + 暂停函数 + 保存状态 (return是终止函数)
+    #   🞉 优势：
+    #     · 节省内存：按需生成数据，不一次性加载，适合处理大数据
+    #     · 简化代码：不用手动实现__iter__和__next__方法，比自定义迭代器简单
+    #     · 支持暂停恢复：yield能保存函数状态，下次调用从暂停处继续，适合分步处理任务
+
+    # 2 例：自定义迭代器类
+    class MyIterator:
+        """用自定义迭代器生成前5个偶数"""
+        def __init__(self):
+            self.current = 0 # 记录当前值
+            self.count = 0   # 计数
+        def __iter__(self):
+            return self      # 必须返回迭代器本身
+        def __next__(self):
+            # 终止条件：计数达到5
+            if self.count >= 5:
+                raise StopIteration
+            value = self.current # 当前要返回的偶数
+            self.current += 2    # 写一个偶数
+            self.count += 1      # 计数+1
+            return value
+    # 使用自定义迭代器
+    print("用自定义迭代器生成前5个偶数：")
+    my_iter = MyIterator()
+    for i in my_iter:
+        print(i)
+    print("--------------------")
+
+    # 3 例1：列表推导式和生成器表达式
+    li = [1,2,3,4,5,6,7,8,9,10]
+    print(li)
+    print([i*2 for i in li if i%2==0])
+    print("--------------------")
+    """用生成器表达式生成前5个偶数，代码明显比"2 例"简洁很多"""
+    print("用生成器表达式生成前5个偶数：")
+    for i in (i*2 for i in range(5)):
+        print(i)
+    print("--------------------")
+    # ----------------------------------------
+    # 3 例2：生成器函数
+    def my_generator():
+        """用生成器函数生成前5个偶数"""
+        current = 0
+        count = 0
+        while count < 5:
+            value = current
+            current += 2
+            count += 1
+            yield value
+    print("用生成器函数生成前5个偶数：")
+    my_generator = my_generator()
+    print(next(my_generator))
+    print(next(my_generator))
+    print(next(my_generator))
+    print(next(my_generator))
+    print(next(my_generator))
+    # print(next(my_generator)) # StopIteration
 
     print()
 # --------------------------------------------------------------------------------
