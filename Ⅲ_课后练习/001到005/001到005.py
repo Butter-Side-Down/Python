@@ -14,7 +14,10 @@ def main():
     # test8()                        # 第8题：动态排序
     # test9()                        # 第9题：寻找最小连续9整除数
     # test10()                       # 第10题：进制转换
-    test11()                       # 第11题：打印素数
+    # test11()                       # 第11题：打印素数
+    # test12()                       # 第12题：列表批量移除并求和
+    # test13()                       # 第13题：列表去重
+    test14()                       # 第14题：元素互换
     #********************控制台********************
 
 #--------------------------------------------------------------------------------
@@ -285,6 +288,77 @@ def test11():
         return results
 
     print(f"结果：{print_primes(1, 100)}")
+
+    print()
+# --------------------------------------------------------------------------------
+# 第12题：列表批量移除并求和
+def test12():
+    """
+    需求：定义一个函数，该函数用于从第一个列表list1中移除所有存在于第二个列表list2中的元素，然后对剩余元素求和
+    """
+    print("第12题：列表批量移除并求和========================================")
+    list1_1 = [1, 2, 3, 4, 5, 6, 7, 2, 8, 9, 10]
+    list1_2 = [2, 6, 4, 11, 10]
+    list2_1 = [1, 2, 3, 4, 5, 6, 7, 2, 8, 9, 10]
+    list2_2 = [2, 6, 4, 11, 10]
+    # 使用普通循环解决：
+    def remove_and_sum1(list1, list2):
+        new_list = []
+        for i in list1:
+            if i not in list2:
+                new_list.append(i)
+        print(new_list)
+        return sum(new_list)
+    # 使用列表推导式解决：
+    def remove_and_sum2(list1, list2):
+        new_list = [i for i in list1 if i not in list2]
+        print(new_list)
+        return sum(new_list)
+
+    print(f"list1_1的结果为：{remove_and_sum1(list1_1, list1_2)}")
+    print(f"list2_1的结果为：{remove_and_sum2(list2_1, list2_2)}")
+
+    print()
+# --------------------------------------------------------------------------------
+# 第13题：列表去重
+def test13():
+    """
+    需求：定义一个函数，该函数用于对列表进行去重处理，并返回一个不包含任何重复的元素的新列表
+    """
+    print("第13题：列表去重========================================")
+    list1 = [9, 1, 3, 4, 7, 5, 6, 7, 2, 1, 9, 10]
+    # 用循环解决：
+    def remove_duplicates1(list1):
+        new_list = []
+        # 这里不能用列表推导式！因为其引用的是上面这个空的 new_list
+        for i in list1:
+            if i not in new_list:
+                new_list.append(i)
+        return new_list
+    # 用集合解决：
+    def remove_duplicates2(list1):
+        new_list = list(set(list1))
+        return new_list
+
+    print(f"去重后的结果为：{remove_duplicates1(list1)}")
+    print(f"去重后的结果为：{remove_duplicates2(list1)}")
+
+    print()
+# --------------------------------------------------------------------------------
+# 第14题：元素互换
+def test14():
+    """
+    需求：定义一个函数，该函数用于实现两个变量值的互换操作
+    """
+    print("第14题：元素互换========================================")
+    var1 = 10
+    var2 = 20
+    # 通过解包解决：
+    def swap(var1, var2):
+        return var2, var1
+
+    var1, var2 = swap(var1, var2)
+    print(f"交换后的结果为：{var1}, {var2}")
 
     print()
 # --------------------------------------------------------------------------------
