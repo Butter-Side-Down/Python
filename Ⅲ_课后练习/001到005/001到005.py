@@ -224,7 +224,7 @@ def test8():
         if new_num < list1[i]:
             list1.insert(i, new_num)
             break
-        # 如果上面循环正常结束，则将新数插入到列表末尾
+    # 如果上面循环正常结束，则将新数插入到列表末尾
     list1.append(new_num)
     print(f"插入后列表为：{list1}")
     print("--------------------")
@@ -448,7 +448,23 @@ def test18():
     示例：传入数据90，打印 90 = 2 * 3 * 3 * 5 作为质因数分解的结果
     """
     print("第18题：求质因数========================================")
+    def factorize(n):
+        num = n # 保存原始值
+        i = 2
+        factors = []
+        while i * i <= n:
+            if n % i:
+                i += 1
+            else:
+                n //= i
+                factors.append(i)
+        # 如果剩余 n > 1，说明它本身是个质数
+        if n > 1:
+            factors.append(n)
+        # 将数值列表转换为字符串，并打印出分解的结果
+        print(f"{num} = {' * '.join(map(str, factors))}")
 
+    factorize(1234)
 
     print()
 # --------------------------------------------------------------------------------
