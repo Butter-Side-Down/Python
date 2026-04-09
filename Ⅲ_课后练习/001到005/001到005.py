@@ -22,7 +22,12 @@ def main():
     # test16()                       # 第16题：日期计算
     # test17()                       # 第17题：斐波那契数列求项
     # test18()                       # 第18题：求质因数
-    test19()                       # 第19题：列表求积
+    # test19()                       # 第19题：列表求积
+    # test20()                       # 第20题：字符串截取和翻转
+    # test21()                       # 第21题：字典键值互换
+    # test22()                       # 第22题：字符串转换
+    # test23()                       # 第23题：年龄验证(异常相关)
+    test24()                       # 第24题：Python绘图入门
     #********************控制台********************
 
 #--------------------------------------------------------------------------------
@@ -489,6 +494,134 @@ def test19():
     print(f"列表中元素的乘积为：{product([])}")
     print(f"列表中元素的乘积为：{product([1, 2, '3', 4, 5])}")
     print(f"列表中元素的乘积为：{product([1, 2, 3, 4, 5])}")
+
+    print()
+# --------------------------------------------------------------------------------
+# 第20题：字符串截取和翻转
+def test20():
+    """
+    需求：定义一个函数，该函数接收一个字符串和一个整数作为参数。完成以下操作：
+          1.从字符串头部截取指定数量的字符并翻转
+          2.从字符串尾部截取相同数量的字符并翻转
+          3.分别打印出 头部和尾部翻转后与剩余部分拼接后的新字符串
+    """
+    print("第20题：字符串截取和翻转========================================")
+    def reverse_string(string, n):
+        if not isinstance(string, str):
+            return "错误！请输入字符串！"
+        elif not isinstance(n, int):
+            return "错误！请输入整数！"
+        elif n > len(string):
+            return "错误！截取的字符数量不能大于字符串的长度！"
+        else:
+            # 截取头部和尾部字符
+            head = string[:n]
+            head_remaining = string[n:]
+            tail = string[-n:]
+            tail_remaining = string[:-n]
+            # 翻转字符
+            new_head = head[::-1]
+            new_tail = tail[::-1]
+            new_string1 = new_head + head_remaining
+            new_string2 = tail_remaining + new_tail
+            return new_string1, new_string2
+
+    print(f"字符串截取和翻转结果为：{reverse_string('hello world', 99)}")
+    print(f"字符串截取和翻转结果为：{reverse_string('hello world', 3)}")
+    print(f"字符串截取和翻转结果为：{reverse_string('hello world', 6)}")
+
+    print()
+# --------------------------------------------------------------------------------
+# 第21题：字典键值互换
+def test21():
+    """
+    需求：定义一个函数，用于交换指定字典的 key 和 value
+    """
+    print("第21题：字典键值互换========================================")
+    def swap_keys_values(dictionary):
+        if not isinstance(dictionary, dict):
+            return "错误！请输入字典！"
+        elif not dictionary:
+            return "错误！字典不能为空！"
+        elif len(dictionary.keys()) != len(set(dictionary.values())):
+            return "错误！字典的 value 有重复，不能转换为 key ！"
+        else:
+            return {v: k for k, v in dictionary.items()}
+
+    print(swap_keys_values({'a': 1, 'b': 2, 'c': 2}))
+    print(swap_keys_values({'a': 1, 'b': 2, 'c': 3}))
+
+    print()
+# --------------------------------------------------------------------------------
+# 第22题：字符串转换
+def test22():
+    """
+    需求：定义一个函数，该函用于尝试将用户输入的字符串转换为整数：
+          如果转换成功，则返回整数；否则返回错误信息
+    """
+    print("第22题：字符串转换========================================")
+    def convert_string_to_int():
+        try:
+            return int(input("请输入一个整数："))
+        except ValueError:
+            return "错误！请输入有效的整数！"
+
+    print(convert_string_to_int())
+
+    print()
+# --------------------------------------------------------------------------------
+# 第23题：年龄验证(异常相关)
+def test23():
+    """
+    需求：定义一个函数，该函数接收一个人的年龄作为参数
+          如果年龄不在合法范围内(＜0或＞120)，则抛出异常，但不影响继续运行
+    """
+    print("第23题：年龄验证(异常相关)========================================")
+    def verify_age(age):
+        try:
+            if age < 0 or age > 120:
+                raise ValueError(f"❌ {age}不是有效值")
+            else:
+                print(f"年龄 {age} 验证成功！")
+        except ValueError as e:
+            print(e)
+
+    verify_age(18)
+    verify_age(-1)
+    verify_age(122)
+    verify_age(20)
+
+    print()
+# --------------------------------------------------------------------------------
+# 第24题：Python绘图入门
+def test24():
+    """
+    需求：请使用Python的tkinter库来创建一个图形界面，并在其中绘制一个由圆圈组成的螺旋形图案
+    """
+    print("第24题：Python绘图入门========================================")
+    # 导入tkinter模块，用于创建图形用户界面
+    from tkinter import Canvas, BOTH, mainloop
+    def draw_spiral():
+        # 创建一个Canvas组件，用于绘制图形，并设置宽度为500像素，高度为400像素
+        canvas = Canvas(width=500, height=400)
+        # 使用pack布局管理器将Canvas组件添加到窗口中，
+        # 并设置其扩展和填充属性以便填满整个窗口
+        canvas.pack(expand=True, fill=BOTH)
+        # 初始化变量 k，用于控制圆圈的半径
+        k = 1
+        # 初始化变量 j，用于控制每次循环中 k 的增量，从而控制圆圈之间的大小差异
+        j = 1
+        # 绘制 26 个圆圈，形成类似螺旋线的同心圆
+        for i in range(26):
+            # 使用 create_oval 方法绘制圆圈
+            canvas.create_oval(250-k, 200-k, 250+k, 200+k, width=1)
+            k += j
+            j += 0.4
+
+        # 进入 tkinter 的主事件循环，这样窗口就会保持打开状态并响应用户的操作(如关闭窗口)
+        mainloop()
+
+    draw_spiral()
 
     print()
 # --------------------------------------------------------------------------------
