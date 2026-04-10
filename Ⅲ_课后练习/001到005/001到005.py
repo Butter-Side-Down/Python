@@ -27,7 +27,11 @@ def main():
     # test21()                       # 第21题：字典键值互换
     # test22()                       # 第22题：字符串转换
     # test23()                       # 第23题：年龄验证(异常相关)
-    test24()                       # 第24题：Python绘图入门
+    # test24()                       # 第24题：Python绘图入门1
+    # test25()                       # 第25题：Python绘图入门2
+    # test26()                       # 第26题：Python绘图入门3
+    # test27()                       # 第27题：导包生成随机数
+    test28()                       # 第28题：随机生成验证码
     #********************控制台********************
 
 #--------------------------------------------------------------------------------
@@ -191,7 +195,7 @@ def test6():
 def test7():
     """
     需求：给定一个字典，其中每个人的姓名作为键，对应的年龄作为值。
-          请找出年龄最大者的姓名与年龄，并将其打印出来
+          找出年龄最大者的姓名与年龄，并将其打印出来
     """
     print("第7题：找出年龄最大者========================================")
     peoples = {
@@ -231,7 +235,8 @@ def test8():
             list1.insert(i, new_num)
             break
     # 如果上面循环正常结束，则将新数插入到列表末尾
-    list1.append(new_num)
+    else:
+        list1.append(new_num)
     print(f"插入后列表为：{list1}")
     print("--------------------")
     # 使用列表函数解决：
@@ -382,7 +387,7 @@ def test15():
     print("第15题：计算倒数序列和========================================")
     def calculate_sum(n):
         if n % 2 == 0:
-            return sum(1 / i for i in range(1, n + 1, 2))
+            return sum(1 / i for i in range(2, n + 1, 2))
         else:
             return sum(1 / i for i in range(1, n + 1, 2))
 
@@ -593,12 +598,12 @@ def test23():
 
     print()
 # --------------------------------------------------------------------------------
-# 第24题：Python绘图入门
+# 第24题：Python绘图入门1
 def test24():
     """
-    需求：请使用Python的tkinter库来创建一个图形界面，并在其中绘制一个由圆圈组成的螺旋形图案
+    需求：用Python的tkinter库来创建一个图形界面，并在其中绘制一个由圆圈组成的螺旋形图案
     """
-    print("第24题：Python绘图入门========================================")
+    print("第24题：Python绘图入门1========================================")
     # 导入tkinter模块，用于创建图形用户界面
     from tkinter import Canvas, BOTH, mainloop
     def draw_spiral():
@@ -622,6 +627,110 @@ def test24():
         mainloop()
 
     draw_spiral()
+
+    print()
+# --------------------------------------------------------------------------------
+# 第25题：Python绘图入门2
+def test25():
+    """
+    需求：使用Python的tkinter库来创建一个图形界面，并在其中绘制一个由红色线条组成的螺旋形图案
+    """
+    print("第25题：Python绘图入门2========================================")
+    from tkinter import Canvas, BOTH, mainloop
+    def draw_spiral():
+        canvas = Canvas(width=300, height=300, bg="white")
+        canvas.pack(expand=True, fill=BOTH)
+        # 初始化第一组线条的起点坐标
+        x0, y0 = 163, 163
+        # 初始化第一组线条的终点 y 坐标偏移量
+        y1 = 175
+        # 绘制第一组线条
+        for i in range(19):
+            canvas.create_line(x0, y0, x0, y1, width=1, fill="red")
+            # 更新起点坐标，每次向左上方移动5个像素
+            x0, y0 = x0-5, y0-5
+            # 更新终点 y 坐标偏移量，每次增加5个像素
+            y1 += 5
+        # 初始化第二组线条的起点坐标(与第一组相同)
+        x0, y0 = 163, 163
+        # 初始化第二组线条的终点 y 坐标偏移量
+        y1 = 175
+        # 绘制第二组线条
+        for i in range(19):
+            canvas.create_line(x0, y0, x0, y1, width=1, fill="red")
+            # 更新起点坐标，每次向右下方移动5个像素
+            x0, y0 = x0 + 5, y0 + 5
+            # 更新终点 y 坐标偏移量，每次增加5个像素
+            y1 += 5
+        mainloop()
+
+    draw_spiral()
+
+    print()
+# --------------------------------------------------------------------------------
+# 第26题：Python绘图入门3
+def test26():
+    """
+    需求：使用Python的tkinter库来创建一个图形界面，并在其中绘制一个由矩形组成的螺旋形图案。
+    """
+    print("第26题：Python绘图入门3========================================")
+    from tkinter import Canvas, BOTH, mainloop
+    def draw_spiral():
+        canvas = Canvas(width=400, height=400, bg="white")
+        canvas.pack(expand=True, fill=BOTH)
+        # 初始化第一个矩形的左上角坐标
+        x0, y0 = 163, 163
+        # 初始化第一个矩形的右下角坐标
+        x1, y1 = 175, 175
+        for i in range(19):
+            canvas.create_rectangle(x0, y0, x1, y1)
+            # 更新第一个矩形的左上角坐标，每次向左上方移动5个像素
+            x0, y0 = x0-5, y0-5
+            # 更新第一个矩形的右下角坐标，每次向右下方移动5个像素
+            x1, y1 = x1+5, y1+5
+        mainloop()
+
+    draw_spiral()
+
+    print()
+#--------------------------------------------------------------------------------
+# 第27题：导包生成随机数
+def test27():
+    """
+    需求：编写一个程序，使用random模块来生成各种随机数
+    """
+    print("第27题：导包生成随机数========================================")
+    #    函数                   作用
+    #   .random()            生成 [0.0, 1.0) 范围内的随机小数
+    #   .randint(a, b)       生成 [a, b] 范围内的随机整数
+    #   .choice(seq)         从指定序列中随机选择一个元素
+    #   .shuffle(list1)      将指定列表的元素进行随机排序(会修改原列表！)
+    #   .sample(list1, n)    从指定列表中随机选择 n 个元素
+    print("× 本章无控制台输出案例")
+
+    print()
+#--------------------------------------------------------------------------------
+# 第28题：随机生成验证码
+def test28():
+    """
+    需求：编写一个程序，该程序能够根据用户指定的长度随机生成一个验证码
+          其中可包含大小写英文字母和数字
+    """
+    print("第28题：随机生成验证码========================================")
+    import string, random
+    def random_code(length):
+        # 创建一个包含大小写字母和数字的字符串
+        code_str = string.ascii_letters + string.digits
+        # 创建一个空列表，用于存储生成的随机字符
+        code_list = []
+        # 使用循环生成指定长度的验证码
+        for i in range(length):
+            # 使用 random.choice() 方法从 code_str 中随机选择一个字符
+            code_list.append(random.choice(code_str))
+        # 将生成的字符列表转换为字符串并返回
+        return "".join(code_list)
+
+    print(random_code(8))
 
     print()
 # --------------------------------------------------------------------------------
