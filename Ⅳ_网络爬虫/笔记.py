@@ -184,22 +184,12 @@ def http_and_https():
 # 三、requests入门
 def requests():
     print("三、requests入门========================================")
-    import requests
     # 0.requests模块介绍：
     #   作用：发送HTTP网络请求，返回响应数据
     #   中文文档：https://requests.readthedocs.io/projects/cn/zh-cn/latest/
     #   通过观察文档来学习：如何使用requests来发送网络请求
 
-    # 1.发送get请求：
-    #   需求：通过requests向百度首页发送请求，获取百度首页的数据
-    url_1 = "https://www.baidu.com"
-    #   向目标URL发送get请求
-    response = requests.get(url =  url_1)
-    #   打印响应内容
-    print(response.text)    # 获取字符串(可能出现乱码，因为有二进制数据)
-    print("--------------------")
-    print(response.content) # 【推荐】获取原始的二进制数据(byte类型的数据)
-
+    # 1.发送get请求：requests.get()
     # 2.响应数据的获取：
     #   🞉 response.text
     #     · 类型：str
@@ -239,7 +229,105 @@ def requests():
     #   🞉 response.request.cookies    响应对应请求的cookie
     #   🞉 response.cookies            响应的cookie(经过了set-cookie动作)
 
+    # 5.基础反爬虫手段应对措施：
+    #   🞉 检测请求头中的 User-Agent 是否是一个正常浏览器的 User-Agent
+    #       解决方案：在请求时自己设置请求头中的 User-Agent
+
+    # 6.Xpath：
+    #   🞉 介绍：即XML路径语言，是一种用来确定XML文档中某部分位置的语言
+    #   🞉 常用表达式：XPath使用路径表达式来选取XML文档中的节点或者节点集，
+    #                 这些路径表达式和我们在常规的电脑文件系统中看到的表达式非常相似。以下是常用的路径表达式
+    #       ----------------------------------------
+    #        表达式       描述
+    #       nodename    选取此节点的所有子节点
+    #       /           从根节点选取
+    #       //          从匹配选择的当前节点选择文档中的节点，而不考虑它们的位置
+    #       .           选取当前节点
+    #       ..          选取当前节点的父节点
+    #       @           选取属性
+    #       ----------------------------------------
+    #        示例        意义
+    #       div        选取div元素的所有子节点
+    #       /div       选取根元素div  ※注意：假如路径起始于正斜杠(/)，则此路径始终代表到某元素的绝对路径！
+    #       div/a      选取属于div的子元素的所有a元素
+    #       //div      选取所有div子元素
+    #       div//p     选择属于div元素的后代的所有div元素，而不管它们位于p之下的什么位置
+    #       //@lang    选取名为lang的所有属性
+    #   🞉 谓语(条件过滤)
+    #        示例
+    #       /ul/li[1]               选取属于 ul 子元素的第一个 li 元素
+    #       /ul/li[last()]          选取属于 ul 子元素的最后一个 li 元素
+    #       /ul/li[last()-1]        选取属于 ul 子元素的倒数第二个 li 元素
+    #       /ul/li[position()<3]    选取最前面的两个属于 ul 元素的子元素的 li 元素
+    #       //div[@attr]            选取所有拥有名为 attr 的属性的 div 元素
+    #       //div[@attr='leng]      选取所有 div 元素，且这些元素拥有值为 leng 的 attr 属性
+
+    # 例：
+    # get_baidu_page()      # 例1：获取百度首页数据
+    # get_baidu_picture()   # 例2：获取百度图片数据
+    get_music()           # 例3：获取音频
+    get_douban_ranking()  # 例4：获取豆瓣电影排行榜数据(详见"知识点6")
+# ----------------------------------------
+def get_baidu_page():
+    import requests
+    url_1 = "https://www.baidu.com"
+    # 向目标URL发送get请求
+    response = requests.get(url=url_1)
+    # 打印响应内容
+    print(response.text)  # 获取字符串(可能出现乱码，因为有二进制数据)
+    print("--------------------")
+    print(response.content)  # 【推荐】获取原始的二进制数据(byte类型的数据)
+    print("--------------------")
+    print(response.request.headers) # 请求头中的 User-Agent 显然是一个爬虫的 User-Agent
+    print("====================")
+    # 请求头是字典格式
+    headers_1 = {
+        "user-agent":  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0"
+    }
+    response = requests.get(url = url_1, headers = headers_1)
+    print(response.content.decode())
+    print("--------------------")
+    print(response.request.headers)
+    with open("百度首页.html", "w", encoding="utf-8") as f:
+        f.write(response.text)
+
     print()
+# ----------------------------------------
+def get_baidu_picture():
+    import requests
+    url_2 = "https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png"
+    headers_2 = {
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0"
+    }
+    response = requests.get(url=url_2, headers=headers_2)
+    with open ("百度logo.png", "wb") as f:
+        f.write(response.content)
+    print("图片已成功获取")
+
+    print()
+# ----------------------------------------
+def get_music():
+    import requests
+    url_3 = "https://m804.music.126.net/20260424230147/58adf40ce54e5a3e13bb3b8dfe6b113a/jdyyaac/obj/w5rDlsOJwrLDjj7CmsOj/79292552159/7e21/9ffe/5cd1/7852d5fe01bea22f6fb170be2c1b4108.m4a?vuutv=voZ5wKyHBRAUxwl2WNC+y8eJVS9ruF8vg8/InlvF81jZfCi8VOOdEOvaXWLjeeDJiv59RPmWI6L6f8GaHsoTmWuham2VSsG7MSMstIYixeM=&authSecret=0000019dbfebfd5a08810a32b0a90006&cdntag=bWFyaz1vc193ZWIscXVhbGl0eV9leGhpZ2g"
+    headers_3 = {
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0"
+    }
+    response = requests.get(url=url_3, headers=headers_3)
+    with open ("灰烬之国音乐.m4a", "wb") as f:
+        f.write(response.content)
+    print("音乐已成功获取")
+
+    print()
+# ----------------------------------------
+def get_douban_ranking():
+    import requests
+    url_4 = "https://movie.douban.com/top250"
+    headers_4 = {
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0"
+    }
+    response = requests.get(url=url_4, headers=headers_4)
+
+
 # --------------------------------------------------------------------------------
 if __name__ == "__main__":
     main()
